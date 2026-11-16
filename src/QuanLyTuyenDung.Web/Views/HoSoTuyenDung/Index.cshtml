@@ -1,0 +1,86 @@
+@model List<HoSoTuyenDung>
+@{
+    ViewData["Title"] = "Hồ sơ tuyển dụng";
+    ViewData["MoTa"] = "Hồ sơ doanh nghiệp gửi theo từng đợt tuyển dụng trong năm";
+    var dsNam = ViewBag.DsNam as List<int> ?? [];
+    var nam = ViewData["Nam"] as int?;
+    var dot = ViewData["Dot"] as int?;
+    var trangThai = ViewData["TrangThai"] as TrangThaiHoSo?;
+}
+
+<div class="the">
+    <form method="get" class="bo-loc">
+        <div class="tim-kiem flex-grow-1">
+            <i class="bi bi-search"></i>
+            <input type="search" name="tuKhoa" value="@ViewData["TuKhoa"]" class="form-control" placeholder="Mã hồ sơ, doanh nghiệp, ngành, vị trí..." />
+        </div>
+        <select name="doanhNghiepId" class="form-select w-auto" asp-items="ViewBag.DsDoanhNghiep">
+            <option value="">Mọi doanh nghiệp</option>
+        </select>
+        <select name="nam" class="form-select w-auto">
+            <option value="">Mọi năm</option>
+            @foreach (var n in dsNam)
+            {
+                <option value="@n" selected="@(n == nam)">Năm @n</option>
+            }
+        </select>
+        <select name="dot" class="form-select w-auto">
+            <option value="">Mọi đợt</option>
+            @for (var d = 1; d <= 4; d++)
+            {
+                <option value="@d" selected="@(d == dot)">Đợt @d</option>
+            }
+        </select>
+        <select name="trangThai" class="form-select w-auto" asp-items="Html.GetEnumSelectList<TrangThaiHoSo>()
+                .Select(i => { i.Selected = trangThai.HasValue && i.Value == ((int)trangThai).ToString(); return i; })">
+            <option value="">Mọi trạng thái</option>
+        </select>
+        <button type="submit" class="btn btn-outline-primary">Lọc</button>
+        <a asp-action="Create" class="btn btn-primary ms-lg-auto"><i class="bi bi-folder-plus me-1"></i>Tiếp nhận hồ sơ</a>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table bang">
+            <thead>
+                <tr>
+                    <th>Mã hồ sơ</th>
+                    <th>Doanh nghiệp</th>
+                    <th>Đợt</th>
+                    <th class="d-none d-md-table-cell">Tiếp nhận</th>
+                    <th class="d-none d-md-table-cell">Hạn nộp</th>
+                    <th class="text-center">Vị trí</th>
+                    <th class="text-center">Số lượng</th>
+                    <th>Trạng thái</th>
+                    <th style="width:140px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var h in Model)
+                {
+                    <tr>
+                        <td><a asp-action="Details" asp-route-id="@h.Id" class="fw-semibold">@h.MaHoSo</a></td>
+                        <td>@h.DoanhNghiep?.TenDoanhNghiep</td>
+                        <td class="text-nowrap">Đợt @h.DotTuyenDung/@h.Nam</td>
+                        <td class="d-none d-md-table-cell">@h.NgayTiepNhan.ToString("dd/MM/yyyy")</td>
+                        <td class="d-none d-md-table-cell">@h.HanNopHoSo?.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center">@h.ChiTiets.Count</td>
+                        <td class="text-center">@h.ChiTiets.Sum(c => c.SoLuong)</td>
+                        <td><span class="@BadgeHelper.Css(h.TrangThai)">@h.TrangThai.TenHienThi()</span></td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Details" asp-route-id="@h.Id" class="btn btn-icon" title="Chi tiết"><i class="bi bi-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@h.Id" class="btn btn-icon" title="Sửa"><i class="bi bi-pencil"></i></a>
+                            <form asp-action="Delete" asp-route-id="@h.Id" method="post" class="d-inline"
+                                  data-xac-nhan="Xóa hồ sơ @h.MaHoSo và toàn bộ vị trí tuyển dụng trong hồ sơ?">
+                                <button type="submit" class="btn btn-icon text-danger" title="Xóa"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.Count == 0)
+        {
+            <p class="trong">Không tìm thấy hồ sơ phù hợp.</p>
+        }
+    </div>
+</div>

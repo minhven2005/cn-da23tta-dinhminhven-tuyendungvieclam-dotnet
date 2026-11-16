@@ -1,0 +1,68 @@
+@model HoSoTuyenDung
+@{
+    var laThemMoi = Model.Id == 0;
+    ViewData["Title"] = laThemMoi ? "Tiếp nhận hồ sơ tuyển dụng" : $"Sửa hồ sơ {Model.MaHoSo}";
+}
+
+<div class="the the-form">
+    <form asp-action="@(laThemMoi ? "Create" : "Edit")" asp-route-id="@(laThemMoi ? null : Model.Id)" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="MaHoSo" class="form-label"></label>
+                <input asp-for="MaHoSo" class="form-control" />
+                <span asp-validation-for="MaHoSo" class="text-danger small"></span>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="DoanhNghiepId" class="form-label"></label>
+                <select asp-for="DoanhNghiepId" asp-items="ViewBag.DsDoanhNghiep" class="form-select">
+                    <option value="0">-- Chọn doanh nghiệp --</option>
+                </select>
+                <span asp-validation-for="DoanhNghiepId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="DotTuyenDung" class="form-label"></label>
+                <input asp-for="DotTuyenDung" class="form-control" min="1" max="12" />
+                <span asp-validation-for="DotTuyenDung" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="Nam" class="form-label"></label>
+                <input asp-for="Nam" class="form-control" />
+                <span asp-validation-for="Nam" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="NgayTiepNhan" class="form-label"></label>
+                <input asp-for="NgayTiepNhan" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="HanNopHoSo" class="form-label"></label>
+                <input asp-for="HanNopHoSo" class="form-control" />
+                <span asp-validation-for="HanNopHoSo" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="TrangThai" class="form-label"></label>
+                <select asp-for="TrangThai" asp-items="Html.GetEnumSelectList<TrangThaiHoSo>()" class="form-select"></select>
+            </div>
+            <div class="col-12">
+                <label asp-for="GhiChu" class="form-label"></label>
+                <textarea asp-for="GhiChu" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        @if (laThemMoi)
+        {
+            <p class="text-muted small mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>Sau khi lưu, bạn sẽ thêm các ngành nghề / vị trí và yêu cầu cho hồ sơ.</p>
+        }
+
+        <div class="nut-form">
+            <a asp-action="@(laThemMoi ? "Index" : "Details")" asp-route-id="@(laThemMoi ? null : Model.Id)" class="btn btn-light">Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Lưu</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,41 @@
+@{
+    var hienTai = ViewContext.RouteData.Values["controller"]?.ToString();
+    string Active(string controller) => string.Equals(hienTai, controller, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+
+    var danhMuc = new (string Controller, string Ten, string Icon)[]
+    {
+        ("NganhNghe", "Ngành nghề", "bi-diagram-3"),
+        ("ViTriTuyenDung", "Vị trí tuyển dụng", "bi-person-badge"),
+        ("KienThuc", "Kiến thức", "bi-book"),
+        ("KyNang", "Kỹ năng", "bi-lightning"),
+        ("ChungChi", "Chứng chỉ", "bi-patch-check"),
+        ("BangCap", "Bằng cấp", "bi-mortarboard"),
+    };
+}
+<aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-icon"><i class="bi bi-briefcase-fill"></i></span>
+        <div>
+            <strong>DVVL Tuyển dụng</strong>
+            <small>Trung tâm Dịch vụ việc làm</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white ms-auto d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Đóng"></button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <a class="@Active("Home")" asp-controller="Home" asp-action="Index"><i class="bi bi-grid-1x2"></i>Tổng quan</a>
+
+        <div class="nhom">Nghiệp vụ</div>
+        <a class="@Active("DoanhNghiep")" asp-controller="DoanhNghiep" asp-action="Index"><i class="bi bi-buildings"></i>Doanh nghiệp</a>
+        <a class="@Active("HoSoTuyenDung")" asp-controller="HoSoTuyenDung" asp-action="Index"><i class="bi bi-folder2-open"></i>Hồ sơ tuyển dụng</a>
+
+        <div class="nhom">Danh mục</div>
+        @foreach (var dm in danhMuc)
+        {
+            <a class="@Active(dm.Controller)" asp-controller="@dm.Controller" asp-action="Index"><i class="bi @dm.Icon"></i>@dm.Ten</a>
+        }
+
+        <div class="nhom">Báo cáo</div>
+        <a class="@Active("ThongKe")" asp-controller="ThongKe" asp-action="Index"><i class="bi bi-bar-chart-line"></i>Thống kê</a>
+    </nav>
+</aside>

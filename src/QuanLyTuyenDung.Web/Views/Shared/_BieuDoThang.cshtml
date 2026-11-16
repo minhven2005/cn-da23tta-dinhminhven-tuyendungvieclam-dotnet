@@ -1,0 +1,27 @@
+@model List<ThongKeThangItem>
+@* Biểu đồ cột: tổng số lượng cần tuyển theo từng tháng (một chuỗi số liệu) *@
+@{
+    var max = Math.Max(1, Model.Max(x => x.TongSoLuong));
+}
+<div class="bieu-do" role="img" aria-label="Biểu đồ số lượng cần tuyển theo tháng">
+    <div class="bieu-do-cot">
+        @foreach (var t in Model)
+        {
+            var phanTram = t.TongSoLuong * 100.0 / max;
+            <div class="cot" tabindex="0"
+                 data-tooltip="Tháng @t.Thang: @t.TongSoLuong người · @t.SoViTri vị trí · @t.SoNhaTuyenDung doanh nghiệp">
+                @if (t.TongSoLuong > 0)
+                {
+                    <span class="cot-gia-tri">@t.TongSoLuong</span>
+                }
+                <span class="cot-thanh" style="height:@(phanTram.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%"></span>
+            </div>
+        }
+    </div>
+    <div class="bieu-do-truc">
+        @foreach (var t in Model)
+        {
+            <span>T@(t.Thang)</span>
+        }
+    </div>
+</div>

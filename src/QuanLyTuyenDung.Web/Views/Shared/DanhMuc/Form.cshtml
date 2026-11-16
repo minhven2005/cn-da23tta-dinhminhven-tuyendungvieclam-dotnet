@@ -1,0 +1,44 @@
+@model DanhMucBase
+@{
+    var laThemMoi = Model.Id == 0;
+    ViewData["Title"] = (laThemMoi ? "Thêm " : "Sửa ") + ViewData["TieuDe"]?.ToString()?.ToLower();
+}
+
+<div class="the the-form">
+    <form asp-action="@(laThemMoi ? "Create" : "Edit")" asp-route-id="@(laThemMoi ? null : Model.Id)" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="Ma" class="form-label"></label>
+                <input asp-for="Ma" class="form-control" />
+                <span asp-validation-for="Ma" class="text-danger small"></span>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="Ten" class="form-label"></label>
+                <input asp-for="Ten" class="form-control" />
+                <span asp-validation-for="Ten" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="MoTa" class="form-label"></label>
+                <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <input asp-for="ConSuDung" class="form-check-input" />
+                    <label asp-for="ConSuDung" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="nut-form">
+            <a asp-action="Index" class="btn btn-light">Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Lưu</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

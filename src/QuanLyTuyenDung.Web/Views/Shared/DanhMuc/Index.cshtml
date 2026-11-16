@@ -1,0 +1,60 @@
+@model IEnumerable<DanhMucBase>
+@{
+    ViewData["Title"] = ViewData["TieuDe"];
+    ViewData["MoTa"] = "Danh mục dùng chung khi lập hồ sơ tuyển dụng";
+}
+
+<div class="the">
+    <div class="thanh-cong-cu">
+        <form method="get" class="tim-kiem">
+            <i class="bi bi-search"></i>
+            <input type="search" name="tuKhoa" value="@ViewData["TuKhoa"]" class="form-control" placeholder="Tìm theo mã hoặc tên..." />
+        </form>
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Thêm mới</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table bang">
+            <thead>
+                <tr>
+                    <th style="width:110px">Mã</th>
+                    <th>Tên</th>
+                    <th class="d-none d-md-table-cell">Mô tả</th>
+                    <th style="width:130px">Trạng thái</th>
+                    <th style="width:110px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><code>@item.Ma</code></td>
+                        <td class="fw-medium">@item.Ten</td>
+                        <td class="d-none d-md-table-cell text-muted">@item.MoTa</td>
+                        <td>
+                            @if (item.ConSuDung)
+                            {
+                                <span class="nhan nhan-xanh">Đang dùng</span>
+                            }
+                            else
+                            {
+                                <span class="nhan nhan-xam">Ngừng dùng</span>
+                            }
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-icon" title="Sửa"><i class="bi bi-pencil"></i></a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
+                                  data-xac-nhan="Xóa &quot;@item.Ten&quot;?">
+                                <button type="submit" class="btn btn-icon text-danger" title="Xóa"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!Model.Any())
+        {
+            <p class="trong">Không có dữ liệu phù hợp.</p>
+        }
+    </div>
+</div>

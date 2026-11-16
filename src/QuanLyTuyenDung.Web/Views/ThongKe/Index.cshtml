@@ -1,0 +1,116 @@
+@model ThongKeViewModel
+@{
+    ViewData["Title"] = "Thống kê tuyển dụng";
+    ViewData["MoTa"] = "Nhà tuyển dụng và công việc tuyển dụng theo tháng, theo năm (không tính hồ sơ bị từ chối)";
+}
+
+<div class="the">
+    <form method="get" class="bo-loc mb-0">
+        <label for="nam" class="fw-medium">Năm thống kê</label>
+        <select id="nam" name="nam" class="form-select w-auto" onchange="this.form.submit()">
+            @foreach (var n in Model.DanhSachNam)
+            {
+                <option value="@n" selected="@(n == Model.Nam)">@n</option>
+            }
+        </select>
+        <span class="text-muted small ms-lg-auto">
+            @Model.NhaTuyenDung.Count nhà tuyển dụng · @Model.TheoThang.Sum(t => t.SoHoSo) hồ sơ ·
+            @Model.TheoThang.Sum(t => t.SoViTri) vị trí · @Model.TheoThang.Sum(t => t.TongSoLuong) người cần tuyển
+        </span>
+    </form>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-xl-7">
+        <div class="the h-100">
+            <div class="the-tieude"><h2>Số lượng cần tuyển theo tháng – năm @Model.Nam</h2></div>
+            <partial name="_BieuDoThang" model="Model.TheoThang" />
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="the h-100">
+            <div class="the-tieude"><h2>Theo tháng</h2></div>
+            <div class="table-responsive bang-cuon">
+                <table class="table bang bang-so">
+                    <thead><tr><th>Tháng</th><th>Nhà TD</th><th>Hồ sơ</th><th>Vị trí</th><th>Số lượng</th></tr></thead>
+                    <tbody>
+                        @foreach (var t in Model.TheoThang)
+                        {
+                            <tr class="@(t.SoHoSo == 0 ? "text-muted" : "")">
+                                <td>Tháng @t.Thang</td><td>@t.SoNhaTuyenDung</td><td>@t.SoHoSo</td><td>@t.SoViTri</td><td>@t.TongSoLuong</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-xl-7">
+        <div class="the h-100">
+            <div class="the-tieude"><h2>Danh sách nhà tuyển dụng năm @Model.Nam</h2></div>
+            <div class="table-responsive">
+                <table class="table bang">
+                    <thead><tr><th>Doanh nghiệp</th><th>Tỉnh/thành</th><th class="text-end">Hồ sơ</th><th class="text-end">Vị trí</th><th class="text-end">Số lượng</th></tr></thead>
+                    <tbody>
+                        @foreach (var n in Model.NhaTuyenDung)
+                        {
+                            <tr>
+                                <td><a asp-controller="DoanhNghiep" asp-action="Details" asp-route-id="@n.DoanhNghiepId">@n.TenDoanhNghiep</a></td>
+                                <td>@n.TinhThanh</td>
+                                <td class="text-end">@n.SoHoSo</td>
+                                <td class="text-end">@n.SoViTri</td>
+                                <td class="text-end fw-semibold">@n.TongSoLuong</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.NhaTuyenDung.Count == 0)
+                {
+                    <p class="trong">Không có dữ liệu trong năm @Model.Nam.</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="the h-100">
+            <div class="the-tieude"><h2>Nhu cầu theo ngành nghề</h2></div>
+            @{ var maxNganh = Math.Max(1, Model.TheoNganh.Select(x => x.TongSoLuong).DefaultIfEmpty(0).Max()); }
+            <div class="thanh-ngang">
+                @foreach (var n in Model.TheoNganh)
+                {
+                    <div class="thanh-ngang-dong" data-tooltip="@n.TenNganh: @n.TongSoLuong người · @n.SoViTri vị trí" tabindex="0">
+                        <div class="thanh-ngang-nhan"><span>@n.TenNganh</span><strong>@n.TongSoLuong</strong></div>
+                        <div class="thanh-ngang-ray">
+                            <span style="width:@((n.TongSoLuong * 100.0 / maxNganh).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%"></span>
+                        </div>
+                    </div>
+                }
+                @if (Model.TheoNganh.Count == 0)
+                {
+                    <p class="trong">Không có dữ liệu.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="the mt-3">
+    <div class="the-tieude"><h2>Tổng hợp theo năm</h2></div>
+    <div class="table-responsive">
+        <table class="table bang bang-so">
+            <thead><tr><th>Năm</th><th>Nhà tuyển dụng</th><th>Hồ sơ</th><th>Vị trí</th><th>Số lượng cần tuyển</th></tr></thead>
+            <tbody>
+                @foreach (var n in Model.TheoNam)
+                {
+                    <tr>
+                        <td><a asp-route-nam="@n.Nam" class="fw-semibold">@n.Nam</a></td>
+                        <td>@n.SoNhaTuyenDung</td><td>@n.SoHoSo</td><td>@n.SoViTri</td><td>@n.TongSoLuong</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

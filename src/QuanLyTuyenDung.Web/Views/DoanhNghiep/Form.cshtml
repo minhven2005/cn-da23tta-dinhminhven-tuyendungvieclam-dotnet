@@ -1,0 +1,74 @@
+@model DoanhNghiep
+@{
+    var laThemMoi = Model.Id == 0;
+    ViewData["Title"] = laThemMoi ? "Thêm doanh nghiệp" : "Sửa doanh nghiệp";
+}
+
+<div class="the the-form">
+    <form asp-action="@(laThemMoi ? "Create" : "Edit")" asp-route-id="@(laThemMoi ? null : Model.Id)" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <h3 class="nhom-form">Thông tin chung</h3>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label asp-for="TenDoanhNghiep" class="form-label"></label>
+                <input asp-for="TenDoanhNghiep" class="form-control" />
+                <span asp-validation-for="TenDoanhNghiep" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="MaSoThue" class="form-label"></label>
+                <input asp-for="MaSoThue" class="form-control" placeholder="VD: 1500123456" />
+                <span asp-validation-for="MaSoThue" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="TinhTrang" class="form-label"></label>
+                <select asp-for="TinhTrang" asp-items="Html.GetEnumSelectList<TinhTrangHoatDong>()" class="form-select"></select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Website" class="form-label"></label>
+                <input asp-for="Website" class="form-control" placeholder="https://" />
+            </div>
+        </div>
+
+        <h3 class="nhom-form">Trụ sở</h3>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label asp-for="DiaChiTruSo" class="form-label"></label>
+                <input asp-for="DiaChiTruSo" class="form-control" />
+                <span asp-validation-for="DiaChiTruSo" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="TinhThanh" class="form-label"></label>
+                <input asp-for="TinhThanh" class="form-control" />
+            </div>
+        </div>
+
+        <h3 class="nhom-form">Người liên hệ</h3>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="NguoiLienHe" class="form-label"></label>
+                <input asp-for="NguoiLienHe" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="SoDienThoai" class="form-label"></label>
+                <input asp-for="SoDienThoai" class="form-control" />
+                <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="nut-form">
+            <a asp-action="Index" class="btn btn-light">Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Lưu</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

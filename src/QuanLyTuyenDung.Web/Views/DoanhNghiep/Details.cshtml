@@ -1,0 +1,66 @@
+@model DoanhNghiep
+@{
+    ViewData["Title"] = Model.TenDoanhNghiep;
+    ViewData["MoTa"] = $"Mã số thuế {Model.MaSoThue}";
+}
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="the h-100">
+            <div class="the-tieude">
+                <h2>Thông tin doanh nghiệp</h2>
+                <span class="@BadgeHelper.Css(Model.TinhTrang)">@Model.TinhTrang.TenHienThi()</span>
+            </div>
+            <dl class="thong-tin">
+                <dt>Trụ sở</dt><dd>@Model.DiaChiTruSo@(string.IsNullOrEmpty(Model.TinhThanh) ? "" : ", " + Model.TinhThanh)</dd>
+                <dt>Người liên hệ</dt><dd>@(Model.NguoiLienHe ?? "—")</dd>
+                <dt>Điện thoại</dt><dd>@(Model.SoDienThoai ?? "—")</dd>
+                <dt>Email</dt><dd>@(Model.Email ?? "—")</dd>
+                <dt>Website</dt><dd>@(Model.Website ?? "—")</dd>
+                <dt>Ngày tạo</dt><dd>@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
+            </dl>
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Sửa</a>
+                <a asp-action="Index" class="btn btn-light btn-sm">Quay lại</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="the h-100">
+            <div class="the-tieude">
+                <h2>Hồ sơ tuyển dụng đã gửi (@Model.HoSoTuyenDungs.Count)</h2>
+                @if (Model.TinhTrang == TinhTrangHoatDong.DangHoatDong)
+                {
+                    <a asp-controller="HoSoTuyenDung" asp-action="Create" asp-route-doanhNghiepId="@Model.Id" class="btn btn-primary btn-sm">
+                        <i class="bi bi-folder-plus me-1"></i>Tiếp nhận hồ sơ
+                    </a>
+                }
+            </div>
+            <div class="table-responsive">
+                <table class="table bang">
+                    <thead>
+                        <tr><th>Mã hồ sơ</th><th>Đợt</th><th>Ngày tiếp nhận</th><th class="text-center">Vị trí</th><th class="text-center">Số lượng</th><th>Trạng thái</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in Model.HoSoTuyenDungs.OrderByDescending(h => h.NgayTiepNhan))
+                        {
+                            <tr>
+                                <td><a asp-controller="HoSoTuyenDung" asp-action="Details" asp-route-id="@h.Id" class="fw-semibold">@h.MaHoSo</a></td>
+                                <td>Đợt @h.DotTuyenDung/@h.Nam</td>
+                                <td>@h.NgayTiepNhan.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">@h.ChiTiets.Count</td>
+                                <td class="text-center">@h.ChiTiets.Sum(c => c.SoLuong)</td>
+                                <td><span class="@BadgeHelper.Css(h.TrangThai)">@h.TrangThai.TenHienThi()</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.HoSoTuyenDungs.Count == 0)
+                {
+                    <p class="trong">Doanh nghiệp chưa gửi hồ sơ nào.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

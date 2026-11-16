@@ -1,0 +1,83 @@
+@model HoSoTuyenDung
+@{
+    ViewData["Title"] = $"Hồ sơ {Model.MaHoSo}";
+    ViewData["MoTa"] = $"{Model.DoanhNghiep?.TenDoanhNghiep} · Đợt {Model.DotTuyenDung}/{Model.Nam}";
+}
+
+<div class="the">
+    <div class="the-tieude">
+        <h2>Thông tin hồ sơ</h2>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Sửa</a>
+            <a asp-action="Index" class="btn btn-light btn-sm">Quay lại</a>
+        </div>
+    </div>
+    <div class="luoi-thong-tin">
+        <div><span>Doanh nghiệp</span>
+            <a asp-controller="DoanhNghiep" asp-action="Details" asp-route-id="@Model.DoanhNghiepId">@Model.DoanhNghiep?.TenDoanhNghiep</a></div>
+        <div><span>Đợt tuyển dụng</span>Đợt @Model.DotTuyenDung năm @Model.Nam</div>
+        <div><span>Ngày tiếp nhận</span>@Model.NgayTiepNhan.ToString("dd/MM/yyyy")</div>
+        <div><span>Hạn nộp hồ sơ</span>@(Model.HanNopHoSo?.ToString("dd/MM/yyyy") ?? "—")</div>
+        <div><span>Trạng thái</span><span class="@BadgeHelper.Css(Model.TrangThai)">@Model.TrangThai.TenHienThi()</span></div>
+        <div><span>Tổng nhu cầu</span>@Model.ChiTiets.Sum(c => c.SoLuong) người / @Model.ChiTiets.Count vị trí</div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.GhiChu))
+    {
+        <p class="mt-3 mb-0 text-muted"><i class="bi bi-chat-left-text me-1"></i>@Model.GhiChu</p>
+    }
+</div>
+
+<div class="the mt-3">
+    <div class="the-tieude">
+        <h2>Vị trí tuyển dụng và yêu cầu</h2>
+        <a asp-action="ThemViTri" asp-route-hoSoId="@Model.Id" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Thêm vị trí</a>
+    </div>
+
+    @if (Model.ChiTiets.Count == 0)
+    {
+        <p class="trong">Hồ sơ chưa có vị trí tuyển dụng nào.</p>
+    }
+
+    <div class="ds-vi-tri">
+        @foreach (var ct in Model.ChiTiets)
+        {
+            <div class="vi-tri">
+                <div class="vi-tri-dau">
+                    <div>
+                        <h3>@ct.ViTriTuyenDung?.Ten</h3>
+                        <div class="text-muted small">@ct.NganhNghe?.Ten</div>
+                    </div>
+                    <div class="text-nowrap">
+                        <a asp-action="SuaViTri" asp-route-id="@ct.Id" class="btn btn-icon" title="Sửa"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="XoaViTri" asp-route-id="@ct.Id" method="post" class="d-inline" data-xac-nhan="Xóa vị trí này khỏi hồ sơ?">
+                            <button type="submit" class="btn btn-icon text-danger" title="Xóa"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="vi-tri-chi-so">
+                    <span><i class="bi bi-people"></i>@ct.SoLuong người</span>
+                    <span><i class="bi bi-cash-coin"></i>@(ct.MucLuong ?? "Thỏa thuận")</span>
+                    <span><i class="bi bi-mortarboard"></i>@(ct.BangCap?.Ten ?? "Không yêu cầu")</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(ct.MoTaCongViec))
+                {
+                    <p class="small mb-2">@ct.MoTaCongViec</p>
+                }
+                <div class="yeu-cau">
+                    <div><span>Kiến thức</span>
+                        @foreach (var x in ct.KienThucs) { <span class="the-nho">@x.Ten</span> }
+                        @if (ct.KienThucs.Count == 0) { <em>—</em> }
+                    </div>
+                    <div><span>Kỹ năng</span>
+                        @foreach (var x in ct.KyNangs) { <span class="the-nho">@x.Ten</span> }
+                        @if (ct.KyNangs.Count == 0) { <em>—</em> }
+                    </div>
+                    <div><span>Chứng chỉ</span>
+                        @foreach (var x in ct.ChungChis) { <span class="the-nho">@x.Ten</span> }
+                        @if (ct.ChungChis.Count == 0) { <em>—</em> }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

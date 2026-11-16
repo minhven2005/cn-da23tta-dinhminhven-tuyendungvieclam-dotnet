@@ -1,0 +1,92 @@
+@model ChiTietTuyenDungFormViewModel
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Thêm vị trí tuyển dụng" : "Sửa vị trí tuyển dụng";
+    ViewData["MoTa"] = $"Hồ sơ {Model.MaHoSo} · {Model.TenDoanhNghiep}";
+}
+
+<div class="the the-form">
+    <form asp-action="LuuViTri" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="HoSoTuyenDungId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <h3 class="nhom-form">Vị trí</h3>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="NganhNgheId" class="form-label"></label>
+                <select asp-for="NganhNgheId" asp-items="Model.DsNganhNghe" class="form-select">
+                    <option value="0">-- Chọn ngành nghề --</option>
+                </select>
+                <span asp-validation-for="NganhNgheId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ViTriTuyenDungId" class="form-label"></label>
+                <select asp-for="ViTriTuyenDungId" asp-items="Model.DsViTri" class="form-select">
+                    <option value="0">-- Chọn vị trí --</option>
+                </select>
+                <span asp-validation-for="ViTriTuyenDungId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="SoLuong" class="form-label"></label>
+                <input asp-for="SoLuong" class="form-control" min="1" />
+                <span asp-validation-for="SoLuong" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="MucLuong" class="form-label"></label>
+                <input asp-for="MucLuong" class="form-control" placeholder="VD: 10 - 15 triệu" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="BangCapId" class="form-label"></label>
+                <select asp-for="BangCapId" asp-items="Model.DsBangCap" class="form-select">
+                    <option value="">Không yêu cầu</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label asp-for="MoTaCongViec" class="form-label"></label>
+                <textarea asp-for="MoTaCongViec" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        <h3 class="nhom-form">Yêu cầu</h3>
+        <div class="row g-3">
+            @{
+                var nhomYeuCau = new[]
+                {
+                    ("Kiến thức", "KienThucIds", Model.DsKienThuc, Model.KienThucIds),
+                    ("Kỹ năng", "KyNangIds", Model.DsKyNang, Model.KyNangIds),
+                    ("Chứng chỉ", "ChungChiIds", Model.DsChungChi, Model.ChungChiIds),
+                };
+            }
+            @foreach (var (ten, truong, ds, daChon) in nhomYeuCau)
+            {
+                <div class="col-md-4">
+                    <div class="hop-chon">
+                        <div class="hop-chon-tieude">@ten</div>
+                        @foreach (var item in ds)
+                        {
+                            var id = $"{truong}_{item.Value}";
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="@truong" value="@item.Value" id="@id"
+                                       checked="@daChon.Contains(int.Parse(item.Value))" />
+                                <label class="form-check-label" for="@id">@item.Text</label>
+                            </div>
+                        }
+                        @if (!ds.Any())
+                        {
+                            <em class="text-muted small">Chưa có danh mục</em>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="nut-form">
+            <a asp-action="Details" asp-route-id="@Model.HoSoTuyenDungId" class="btn btn-light">Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Lưu</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

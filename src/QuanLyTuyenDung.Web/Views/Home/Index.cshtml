@@ -1,0 +1,85 @@
+﻿@model DashboardViewModel
+@{
+    ViewData["Title"] = "Tổng quan";
+    ViewData["MoTa"] = $"Tình hình tiếp nhận hồ sơ tuyển dụng năm {DateTime.Today.Year}";
+}
+
+<div class="o-so-lieu">
+    <div class="the so-lieu">
+        <span class="so-lieu-icon"><i class="bi bi-buildings"></i></span>
+        <div>
+            <div class="so-lieu-nhan">Doanh nghiệp</div>
+            <div class="so-lieu-so">@Model.SoDoanhNghiep</div>
+            <div class="so-lieu-phu">@Model.SoDoanhNghiepHoatDong đang hoạt động</div>
+        </div>
+    </div>
+    <div class="the so-lieu">
+        <span class="so-lieu-icon"><i class="bi bi-folder2-open"></i></span>
+        <div>
+            <div class="so-lieu-nhan">Hồ sơ trong năm</div>
+            <div class="so-lieu-so">@Model.SoHoSoTrongNam</div>
+            <div class="so-lieu-phu">@Model.SoHoSoChoDuyet hồ sơ mới chờ duyệt</div>
+        </div>
+    </div>
+    <div class="the so-lieu">
+        <span class="so-lieu-icon"><i class="bi bi-person-badge"></i></span>
+        <div>
+            <div class="so-lieu-nhan">Vị trí tuyển dụng</div>
+            <div class="so-lieu-so">@Model.SoViTriTrongNam</div>
+            <div class="so-lieu-phu">trong các hồ sơ năm nay</div>
+        </div>
+    </div>
+    <div class="the so-lieu">
+        <span class="so-lieu-icon"><i class="bi bi-people"></i></span>
+        <div>
+            <div class="so-lieu-nhan">Nhu cầu tuyển</div>
+            <div class="so-lieu-so">@Model.TongNhuCauTrongNam</div>
+            <div class="so-lieu-phu">người cần tuyển</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-xl-7">
+        <div class="the h-100">
+            <div class="the-tieude">
+                <h2>Số lượng cần tuyển theo tháng</h2>
+                <a asp-controller="ThongKe" asp-action="Index" class="lien-ket">Xem thống kê <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <partial name="_BieuDoThang" model="Model.TheoThang" />
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="the h-100">
+            <div class="the-tieude">
+                <h2>Hồ sơ mới tiếp nhận</h2>
+                <a asp-controller="HoSoTuyenDung" asp-action="Index" class="lien-ket">Tất cả <i class="bi bi-arrow-right"></i></a>
+            </div>
+            @if (Model.HoSoMoiNhat.Count == 0)
+            {
+                <p class="trong">Chưa có hồ sơ nào.</p>
+            }
+            <ul class="ds-gon">
+                @foreach (var h in Model.HoSoMoiNhat)
+                {
+                    <li>
+                        <a asp-controller="HoSoTuyenDung" asp-action="Details" asp-route-id="@h.Id">
+                            <strong>@h.MaHoSo</strong> · @h.DoanhNghiep?.TenDoanhNghiep
+                            <small>Đợt @h.DotTuyenDung/@h.Nam · tiếp nhận @h.NgayTiepNhan.ToString("dd/MM/yyyy")</small>
+                        </a>
+                        <span class="@BadgeHelper.Css(h.TrangThai)">@h.TrangThai.TenHienThi()</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="the mt-3">
+    <div class="the-tieude"><h2>Thao tác nhanh</h2></div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="DoanhNghiep" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Thêm doanh nghiệp</a>
+        <a asp-controller="HoSoTuyenDung" asp-action="Create" class="btn btn-outline-primary"><i class="bi bi-folder-plus me-1"></i>Tiếp nhận hồ sơ</a>
+        <a asp-controller="NganhNghe" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-list-ul me-1"></i>Danh mục ngành nghề</a>
+    </div>
+</div>
